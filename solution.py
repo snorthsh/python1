@@ -9,16 +9,18 @@ def webServer(port=13331):
     # Prepare a server socket
     serverSocket.bind(("", port))
     # Fill in start
-
+    serverSocket.listen(1)
+    print("The server is ready to receive")
     # Fill in end
+
     while True:
         # Establish the connection
-        # print('Ready to serve...')
-        connectionSocket, addr = serverSocket() # Fill in start      #Fill in end
+        print('Ready to serve...')
+        connectionSocket, addr = serverSocket.accept() # Fill in start      #Fill in end
         try:
+
             try:
-                    message = connectionSocket.recv(1024).decode() # Fill in start    #Fill in end
-                message.decode().upper()
+                message = connectionSocket.recv(1024) # Fill in start    #Fill in end
                 filename = message.split()[1]
                 print ("File name is: "), filename
                 f = open(filename[1:])
@@ -26,7 +28,8 @@ def webServer(port=13331):
 
                 # Send one HTTP header line into socket.
                 # Fill in start
-                connectionSocket.send("HTTP/1.1 200 OK".encode()) # Prints the 200 OK requirement
+                okMessage = "HTTP/1.1 200 OK \r\n"
+                connectionSocket.send(okMessage.encode())  # 200 OK message ready to send
                 # Fill in end
 
                 # Send the content of the requested file to the client
@@ -39,19 +42,21 @@ def webServer(port=13331):
                 # Send response message for file not found (404)
                 # Fill in start
                 print("404 Not Found")
-                connectionSocket.send("HTTP/1.1 404 Not Found".encode())
+                nfMessage = "HTTP/1.1 404 Not Found\r\n"
+                connectionSocket.send(nfMessage.encode())
                 # Fill in end
 
                 # Close client socket
                 # Fill in start
                 connectionSocket.close()
                 # Fill in end
+
         except (ConnectionResetError, BrokenPipeError):
             pass
+
     serverSocket.close()
-    sys.exit()  # Terminate the program after sending the corresponding data
+    sys.exit()  # Terminate the program after sending the corresponding data.
 
 
 if __name__ == "__main__":
     webServer(13331)
-
